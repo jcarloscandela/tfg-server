@@ -61,7 +61,7 @@ function init(){
     array.forEach(element => {
         var payload = {
             app_id: 'lora-node-jcarloscandela',
-            dev_id: 'sensor4',
+            dev_id: 'sensor5',
             payload_fields: { Hum: element.Hum, Level: element.Level, Temp: element.Temp },
             metadata: { time: element.time }  
         }
