@@ -12,7 +12,7 @@ function createNode(sensorRaw){
                 nodo.dev_id = sensorRaw.dev_id;
                 nodo.hardware_serial = sensorRaw.hardware_serial;
                 nodo.metadata = sensorRaw.metadata;
-    
+                nodo.lastPayload = { Hum: 29, Level: 12, Temp: 20 };
                 nodo.save(function(err, nodo){
                     if(err){
                         console.log('Error al crear el nodo');

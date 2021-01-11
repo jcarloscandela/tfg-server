@@ -1,10 +1,32 @@
 var Payload = require('../models/payload'); // get our mongoose model
 var Nodo = require('../models/node'); // get our mongoose model
+var fs = require('fs');
 
 function save(dev_id, payload_fields, metadata) {
     let payload = new Payload();
     payload.dev_id = dev_id;
-    payload.payload_fields = payload_fields;
+
+    var filename = 'datos.txt';
+
+    var datos = fs.readFileSync(filename, 'utf8');
+
+    var lineas = datos.split(';');
+
+    var linea = lineas[lineas.length - 2];
+    
+    var hum = linea.split(',')[0];
+    var temp = linea.split(',')[1];
+    var level = 10;
+
+    var payloadfields = { "Hum": hum, "Level": 100, "Temp": temp};
+
+    if(dev_id == 'sensor3'){
+        payload.payload_fields = payload_fields;
+    } else {
+        payload.payload_fields = payloadfields;
+    }
+    //
+
     payload.payload_date = metadata.time;
 
     payload.save();
@@ -17,11 +39,10 @@ function save(dev_id, payload_fields, metadata) {
 
             if (!sensor) {
                 console.log('El sensor no existe')
+            } else {
+                sensor.lastPayload = payload;
+                sensor.save();
             }
-
-            sensor.lastPayload = payload;
-
-            sensor.save();
         }
     )
 }
@@ -55,6 +76,7 @@ function getLastPayloads(req, res) {
     if (req.params.dev_id) {
         Payload.find({ dev_id: req.params.dev_id })
             .sort([['payload_date', +1]])
+            //.limit(10)
             .exec(function (err, payloads) {
                 if (err) {
                     return res.status(500).json({
